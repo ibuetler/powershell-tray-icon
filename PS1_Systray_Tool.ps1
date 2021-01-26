@@ -11,7 +11,7 @@ Param
 
 If ($Restart -ne "") 
 	{
-		sleep 10
+		Start-Sleep -s 10
 	} 
 
 $Current_Folder = split-path $MyInvocation.MyCommand.Path
@@ -35,70 +35,27 @@ function Get-ProxyState() {
 
 # Enables the proxy.
 # IMPORTANT: Change the defaults to something that is useful to you!
-function Enable-Proxy-Jona(
-    [String] $ProxyServer = "http://192.168.100.10:8080",
-    [String] $ProxyScript = "http://192.168.100.10:8080/proxy.pac",
-    [String] $ProxyOverrides = "") {
 
-    Set-ItemProperty -Path $internetSettings -Name ProxyServer -Value $ProxyServer
-    Set-ItemProperty -Path $internetSettings -Name AutoConfigURL -Value $ProxyScript
-    Set-ItemProperty -Path $internetSettings -Name ProxyOverride -Value $ProxyOverrides
-    Set-ItemProperty -Path $internetSettings -Name ProxyEnable -Value 1
+function Change_Proxy_Settings {
+  param(
+  $Proxy_Server, 
+  $Proxy_Script,
+  $Proxy_Overrides,
+  $Location
+  )
 
-    # Also update the environment variables to the right setting.
-    # This enables tools like GIT and NPM to use the proxy.
-    $env:HTTP_PROXY = "$proxyServer"
-    $env:HTTPS_PROXY = "$proxyServer"
-}
+  Set-ItemProperty -Path $internetSettings -Name ProxyServer -Value $Proxy_Server
+  Set-ItemProperty -Path $internetSettings -Name AutoConfigURL -Value $Proxy_Script
+  Set-ItemProperty -Path $internetSettings -Name ProxyOverride -Value $Proxy_Overrides
+  Set-ItemProperty -Path $internetSettings -Name ProxyEnable -Value 1
 
-function Enable-Proxy-Zuerich(
-    [String] $ProxyServer = "http://192.168.200.10:8080",
-    [String] $ProxyScript = "http://192.168.200.10:8080/proxy.pac",
-    [String] $ProxyOverrides = "") {
-
-    Set-ItemProperty -Path $internetSettings -Name ProxyServer -Value $ProxyServer
-    Set-ItemProperty -Path $internetSettings -Name AutoConfigURL -Value $ProxyScript
-    Set-ItemProperty -Path $internetSettings -Name ProxyOverride -Value $ProxyOverrides
-    Set-ItemProperty -Path $internetSettings -Name ProxyEnable -Value 1
-
-    # Also update the environment variables to the right setting.
-    # This enables tools like GIT and NPM to use the proxy.
-    $env:HTTP_PROXY = "$proxyServer"
-    $env:HTTPS_PROXY = "$proxyServer"
-}
-
-function Enable-Proxy-Bern(
-    [String] $ProxyServer = "http://192.168.203.10:8080",
-    [String] $ProxyScript = "http://192.168.203.10:8080/proxy.pac",
-    [String] $ProxyOverrides = "") {
-
-    Set-ItemProperty -Path $internetSettings -Name ProxyServer -Value $ProxyServer
-    Set-ItemProperty -Path $internetSettings -Name AutoConfigURL -Value $ProxyScript
-    Set-ItemProperty -Path $internetSettings -Name ProxyOverride -Value $ProxyOverrides
-    Set-ItemProperty -Path $internetSettings -Name ProxyEnable -Value 1
-
-    # Also update the environment variables to the right setting.
-    # This enables tools like GIT and NPM to use the proxy.
-    $env:HTTP_PROXY = "$proxyServer"
-    $env:HTTPS_PROXY = "$proxyServer"
+  # Also update the environment variables to the right setting.
+  # This enables tools like GIT and NPM to use the proxy.
+  $env:HTTP_PROXY = "$Proxy_Server"
+  $env:HTTPS_PROXY = "$Proxy_Server"
 }
 
 
-function Enable-Proxy-Berlin(
-    [String] $ProxyServer = "http://192.168.205.10:8080",
-    [String] $ProxyScript = "http://192.168.205.10:8080/proxy.pac",
-    [String] $ProxyOverrides = "") {
-
-    Set-ItemProperty -Path $internetSettings -Name ProxyServer -Value $ProxyServer
-    Set-ItemProperty -Path $internetSettings -Name AutoConfigURL -Value $ProxyScript
-    Set-ItemProperty -Path $internetSettings -Name ProxyOverride -Value $ProxyOverrides
-    Set-ItemProperty -Path $internetSettings -Name ProxyEnable -Value 1
-
-    # Also update the environment variables to the right setting.
-    # This enables tools like GIT and NPM to use the proxy.
-    $env:HTTP_PROXY = "$proxyServer"
-    $env:HTTPS_PROXY = "$proxyServer"
-}
 
 # Disables the proxy everywhere
 function Disable-Proxy() {
@@ -166,7 +123,7 @@ $Main_Tool_Icon.contextMenu.MenuItems.AddRange($Menu_Exit)
 # ---------------------------------------------------------------------
 $Menu_Jona_Proxy.Add_Click({	
     Write-Output "Proxy Jona executed" | Out-File -FilePath $ProxyLog -Append
-    Enable-Proxy-Jona
+    Change_Proxy_Settings -Proxy_Server "http://192.168.100.10:8080" -Proxy_Script "http://192.168.100.10:8080/proxy.pac" -Proxy_Overrides "" -Location "Jona"
 })
 
 # ---------------------------------------------------------------------
@@ -174,7 +131,7 @@ $Menu_Jona_Proxy.Add_Click({
 # ---------------------------------------------------------------------
 $Menu_Zuerich_Proxy.Add_Click({	
     Write-Output "Proxy Zuerich executed" | Out-File -FilePath $ProxyLog -Append
-    Enable-Proxy-Zuerich
+    Change_Proxy_Settings -Proxy_Server "http://192.168.200.10:8080:8080" -Proxy_Script "http://192.168.200.10:8080/proxy.pac" -Proxy_Overrides "" -Location "Zuerich"
 })
 
 # ---------------------------------------------------------------------
@@ -182,7 +139,7 @@ $Menu_Zuerich_Proxy.Add_Click({
 # ---------------------------------------------------------------------
 $Menu_Bern_Proxy.Add_Click({	
     Write-Output "Proxy Bern executed" | Out-File -FilePath $ProxyLog -Append
-    Enable-Proxy-Bern
+    Change_Proxy_Settings -Proxy_Server "http://192.168.203.10:8080:8080" -Proxy_Script "http://192.168.203.10:8080/proxy.pac" -Proxy_Overrides "" -Location "Bern"
 })
 
 # ---------------------------------------------------------------------
@@ -190,7 +147,7 @@ $Menu_Bern_Proxy.Add_Click({
 # ---------------------------------------------------------------------
 $Menu_Berlin_Proxy.Add_Click({	
     Write-Output "Proxy Berlin executed" | Out-File -FilePath $ProxyLog -Append
-    Enable-Proxy-Berlin
+    Change_Proxy_Settings -Proxy_Server "http://192.168.205.10:8080" -Proxy_Script "http://192.168.205.10:8080/proxy.pac" -Proxy_Overrides "" -Location "Berlin"
 })
 
 
